@@ -1,35 +1,60 @@
-# Dependencies
+# ======================================
+# .gitignore pour projet To-Do List
+# Frontend (React/Vite) + Backend (Node.js)
+# ======================================
+
+# === DEPENDENCIES ===
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# Production builds
-/build
-/dist
-/public
-
-# Environment variables
+# === ENVIRONMENT VARIABLES ===
 .env
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
 
-# Cache directories
+# === BUILD OUTPUTS ===
+# React/Vite build
+dist/
+dist-ssr/
+build/
+
+# Node.js build
+out/
+
+# === LOGS ===
+logs/
+*.log
+
+# === CACHE FILES ===
 .npm
 .eslintcache
-.parcel-cache
+.cache/
+.parcel-cache/
+.vite/
 
-# IDE and editor files
+# === TEMPORARY FILES ===
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# === IDE & EDITOR FILES ===
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS generated files
+# === OS GENERATED FILES ===
 .DS_Store
 .DS_Store?
 ._*
@@ -37,15 +62,29 @@ pnpm-debug.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Logs
-logs
-*.log
-
-# Coverage directory used by tools like istanbul
+# === COVERAGE & TESTING ===
 coverage/
 *.lcov
+.nyc_output/
 
-# Temporary folders
-tmp/
-temp/
+# === TYPESCRIPT ===
+*.tsbuildinfo
+
+# === MISCELLANEOUS ===
+*.pid
+*.seed
+*.pid.lock
+
+# === SPECIFIC TO THIS PROJECT ===
+# Si vous avez des uploads de fichiers
+uploads/
+public/uploads/
+
+# Fichiers de backup
+*.bak
+*.backup
+
+# Documentation générée
+docs/generated/
