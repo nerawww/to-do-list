@@ -1,33 +1,35 @@
+// Importation de mongoose pour la gestion de la base de données
 const mongoose = require("mongoose");
 
-// Schéma de données pour les utilisateurs
+// Définition du schéma utilisateur
 const userSchema = mongoose.Schema(
   {
     username: {
       type: String,
-      required: true, // Champ obligatoire
+      required: true,
     },
     email: {
       type: String,
-      required: true, // Champ obligatoire
-      unique: true, // L'email doit être unique dans la collection
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
-      required: true, // Champ obligatoire (sera haché)
+      required: true,
     },
     role: {
       type: String,
-      default: "user", // Rôle par défaut
+      default: "user",
     },
     isVerified: {
       type: Boolean,
-      default: false, // Statut de vérification du compte
+      default: false,
     },
   },
-  { timestamps: true } // Ajoute automatiquement createdAt et updatedAt
+  { timestamps: true } // Ajoute createdAt et updatedAt automatiquement
 );
 
-// Création du modèle User basé sur le schéma
+// Création du modèle User à partir du schéma
 const User = mongoose.model("User", userSchema);
+
 module.exports = User;

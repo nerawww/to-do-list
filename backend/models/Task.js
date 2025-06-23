@@ -1,22 +1,23 @@
+// Importation de mongoose pour la gestion de la base de données
 const mongoose = require("mongoose");
 
-// Schéma de données pour les tâches
+// Définition du schéma de tâche
 const taskSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true, // Le titre est obligatoire
+    required: true,
   },
   status: {
     type: Boolean,
-    default: false, // Par défaut, une tâche n'est pas terminée
+    default: false,
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId, // Référence vers l'utilisateur propriétaire
-    ref: "User", // Référence au modèle User
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 
-// Création du modèle Task basé sur le schéma
+// Création du modèle Task à partir du schéma
 const Task = mongoose.model("Task", taskSchema);
+
 module.exports = Task;
-//module.exports = mongoose.model("Task", taskSchema);

@@ -1,35 +1,47 @@
-// Composant modal pour ajouter une nouvelle tâche
+// Composant modal pour ajouter ou éditer une tâche
 export default function TaskModal({
   headline,
   title,
-  isEdit,
   isChecked,
+  isEdit,
   handleSubmit,
   onChangeTitle,
   onChangeStatus,
 }) {
   return (
     <div>
-      {/* Modal d'ajout de tâche */}
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
-          <h2>{headline}</h2>
-          {/* Formulaire de création de tâche */}
+          {/* Titre du modal */}
+          <h2 className="text-2xl">{headline}</h2>
+
+          {/* Formulaire pour saisir ou modifier une tâche */}
           <form
             method="dialog"
             className="flex flex-col gap-3"
             onSubmit={handleSubmit}
           >
-            {/* Bouton de fermeture du modal */}
+            {/* Bouton pour fermer le modal */}
             <button
+              type="button"
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
               onClick={() => document.getElementById("my_modal_3").close()}
-              type="button" // Important pour éviter de soumettre le formulaire
             >
               ✕
             </button>
-            {/* Champ de saisie du titre de la tâche et checkbox en mode édition */}
+
             <div className="flex items-center gap-2 mt-5">
+              {/* Champ pour le titre de la tâche */}
+              <input
+                required
+                type="text"
+                value={title}
+                placeholder="Saisir le nom de la tâche..."
+                className="input input-primary w-full"
+                onChange={onChangeTitle}
+              />
+
+              {/* Checkbox pour le statut, affichée seulement en mode édition */}
               {isEdit && (
                 <input
                   type="checkbox"
@@ -38,16 +50,9 @@ export default function TaskModal({
                   onChange={onChangeStatus}
                 />
               )}
-              <input
-                type="text"
-                value={title}
-                className="input input-primary w-full"
-                required
-                placeholder="Saisir le nom de la tâche"
-                onChange={onChangeTitle}
-              />
             </div>
-            {/* Bouton pour valider l'ajout de la tâche */}
+
+            {/* Bouton pour enregistrer la tâche */}
             <button className="btn btn-primary" type="submit">
               Enregistrer
             </button>

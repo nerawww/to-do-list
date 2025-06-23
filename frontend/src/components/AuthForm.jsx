@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+// Formulaire d'authentification réutilisable pour la connexion et l'inscription
 export default function AuthForm({
   isRegistered,
   handleSubmit,
@@ -10,13 +11,15 @@ export default function AuthForm({
   return (
     <div>
       <form
-        onSubmit={handleSubmit}
         className="w-[500px] p-5 flex flex-col gap-2 shadow-xl"
+        onSubmit={handleSubmit}
       >
+        {/* Titre dynamique selon le mode */}
         <h1 className="text-center text-3xl font-bold">
           {isRegistered ? "Inscription" : "Connexion"}
         </h1>
-        {/* Champ nom d'utilisateur */}
+
+        {/* Champ pour le nom d'utilisateur affiché seulement à l'inscription */}
         {isRegistered && (
           <input
             required
@@ -26,6 +29,7 @@ export default function AuthForm({
             onChange={onChangeUsername}
           />
         )}
+
         {/* Champ email */}
         <input
           required
@@ -34,6 +38,7 @@ export default function AuthForm({
           className="input input-primary w-full"
           onChange={onChangeEmail}
         />
+
         {/* Champ mot de passe */}
         <input
           required
@@ -42,9 +47,13 @@ export default function AuthForm({
           className="input input-primary w-full"
           onChange={onChangePassword}
         />
+
+        {/* Bouton principal */}
         <button className="btn btn-primary">
           {isRegistered ? "S'inscrire" : "Se connecter"}
         </button>
+
+        {/* Lien pour basculer entre connexion et inscription */}
         {isRegistered ? (
           <Link to={"/"} className="underline text-right">
             Se connecter

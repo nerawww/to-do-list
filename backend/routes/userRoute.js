@@ -1,76 +1,89 @@
+// Importation des modules nécessaires
 const express = require("express");
-const bcrypt = require("bcrypt"); // Pour le hachage des mots de passe
-const jwt = require("jsonwebtoken"); // Pour la génération de tokens JWT
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
 const router = express.Router();
 
-// Route d'inscription d'un nouvel utilisateur
+// Route pour l'inscription d'un utilisateur
 router.get("/register", async (req, res) => {
-  // Destructuration des données reçues
   const { username, email, password } = req.body;
-  // const username = req.body.username;
-  // const email = req.body.email;
-  // const password = req.body.password;
 
-  // Vérification si l'utilisateur existe déjà
-  const existingUser = await User.findOne({ email: decode.email });
+  // Vérification des champs obligatoires
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: "Mauvaise requête" });
+  }
+
+  // Vérification de l'existence de l'utilisateur
+  const existingUser = await User.findOne({ email });
   if (existingUser) {
     return res.status(400).json({ message: "Mauvaise requête" });
   }
 
-  // Hachage du mot de passe avec un salt de 10
+  // Hashage du mot de passe
   const hash = await bcrypt.hash(password, 10);
 
-  // Création du nouvel utilisateur avec le mot de passe haché
+  // Création de l'utilisateur
   await User.create({ username, email, password: hash });
+
+  // Configuration du transporteur d'email
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_FROM,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  // Génération du token d'activation
+  const token = jwt.sign(
+    {
+      email: email,
+    },
+    process.env.JWT_SECRET
+  );
+
+  // Lien d'activation envoyé par email
+  const activationLink = `http://localhost:5000/validate/${email}`;
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Activation de votre compte",
+    html: `<p>Bonjour ${username},</p>
+    <p>Merci de vous être inscrit. Veuillez cliquer ici pour activer votre compte :</p>
+    <a href="${activationLink}">${activationLink}</a>`,
+  };
+
+  // Envoi de l'email d'activation
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) return console.log(error);
+    console.log("Email envoyé", info);
+  });
+
   res.status(201).json({ message: "Un utilisateur a été ajouté" });
 });
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_FROM,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Route pour valider le compte utilisateur via le lien d'activation
+router.get("/validate/:token", async (req, res) => {
+  try {
+    const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
+    const user = await User.findOne({ email: decoded.email });
 
-const token = jwt.sign(
-  {
-    email: email,
-  },
-  process.env.JWT_SECRET
-);
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur introuvable" });
 
-const link = `http://localhost:5000/validate/${email}`;
-
-const mailOptions = {
-  from: process.env.EMAIL_FROM,
-  to: email,
-  subject: "Validation",
-  text: "Veuillez cliquer sur le lien afin de valider votre inscription",
-  html: `<a href=${link}>Cliquer</a>`,
-};
-
-transporter.sendMail(mailOptions, (error, info) => {
-  if (error) return console.log(error);
-  console.log("Email envoyé", info);
-});
-
-router.post("/validate/:token", async (req, res) => {
-  const { token } = req.params;
-  const decode = jwt.verify(token, process.env.JWT_SECRET);
-
-  const user = await User.findOne(decode.email);
-  if (user) {
     user.isVerified = true;
-    user.save();
+    await user.save();
+
+    res.status(200).send("Compte activé avec succès");
+  } catch {
+    res.status(400).send("Lien invalide ou expiré");
   }
-  res.status(200).json({ message: "Email validé avec succès" });
 });
 
-// Route de connexion d'un utilisateur
+// Route pour la connexion d'un utilisateur
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -86,18 +99,24 @@ router.post("/login", async (req, res) => {
     return res.status(404).json({ message: "Identifiants invalides" });
   }
 
-  // Génération du token JWT avec les informations utilisateur
+  // Génération du token JWT pour la session
   const token = jwt.sign(
     {
       id: user._id,
       email: user.email,
       role: user.role,
+      username: user.username,
     },
     process.env.JWT_SECRET
   );
 
-  // Envoi de la réponse avec les données utilisateur et le token
-  res.status(200).json({ email: user.email, role: user.role, token: token });
+  // Réponse avec les informations de l'utilisateur et le token
+  res.status(200).json({
+    email: user.email,
+    role: user.role,
+    username: user.username,
+    token: token,
+  });
 });
 
 module.exports = router;

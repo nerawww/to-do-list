@@ -2,32 +2,39 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config(); // Chargement des variables d'environnement
+require("dotenv").config();
 
 // Importation des routes
 const userRoute = require("./routes/userRoute");
 const taskRoute = require("./routes/taskRoute");
+const adminRoute = require("./routes/adminRoute");
 
-// Création de l'instance Express
+// Création de l'application Express
 const app = express();
 
-// Middlewares
-app.use(express.json()); // Permet de lire les données json envoyées
-app.use(cors()); // Autorise les requêtes cross-origin
-app.use("", userRoute); // Utilisation des routes utilisateur
-app.use("", taskRoute); // Utilisation des routes de tâches
+// Middleware pour parser le JSON
+app.use(express.json());
 
-// Port d'écoute depuis les variables d'environnement ou 5000 par défaut
+// Middleware pour autoriser les requêtes cross-origin
+app.use(cors());
+
+// Utilisation des routes
+app.use("", userRoute);
+app.use("", taskRoute);
+app.use("", adminRoute);
+
+// Définition du port d'écoute
 const PORT = process.env.PORT || 5000;
 
-// Connexion à MongoDB et démarrage du serveur
+// Connexion à la base de données MongoDB
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Connexion à MongoDB réussie");
-    // Démarrage du serveur après connexion réussie à la base
+
+    // Démarrage du serveur après la connexion à la base de données
     app.listen(PORT, () =>
       console.log("Le serveur tourne sur le port " + PORT)
     );
   })
-  .catch((e) => console.log(e)); // Gestion des erreurs de connexion
+  .catch((e) => console.log("Connexion à MongoDB échouée :", e));

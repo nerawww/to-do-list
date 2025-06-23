@@ -1,93 +1,88 @@
+// Importation des modules nécessaires
 const express = require("express");
 const Task = require("../models/Task");
-const verifyToken = require("../utils/verifyToken"); // Middleware d'authentification
+const verifyToken = require("../utils/verifyToken");
 
 const router = express.Router();
 
 // Route pour récupérer toutes les tâches de l'utilisateur connecté
 router.get("/task", verifyToken, async (req, res) => {
   try {
-    // Récupération des tâches appartenant à l'utilisateur connecté
     const tasks = await Task.find({ userId: req.user.id });
+
     res.status(200).json(tasks);
   } catch (error) {
     console.error(error);
+
     res
       .status(500)
       .json({ error: "Erreur lors de la récupération des tâches" });
   }
 });
 
-// Créer une tâche
+// Route pour créer une nouvelle tâche
 router.post("/task", verifyToken, async (req, res) => {
   try {
-    const { title } = req.body;
-    // const title = req.body.title;
+    const title = req.body.title;
 
-    // Validation du titre de la tâche
+    // Vérification du champ titre
     if (!title || title.trim().length === 0) {
       return res.status(400).json({ message: "Ce champ est requis" });
     }
 
-    // Vérifier si une tâche avec ce titre existe déjà pour cet utilisateur
-    const existingTask = await Task.findOne({
-      title: title.trim(),
-      userId: req.user.id,
-    });
-
-    if (existingTask) {
-      return res
-        .status(400)
-        .json({ message: "Une tâche avec ce titre existe déjà" });
-    }
-
-    // Création de la nouvelle tâche pour l'utilisateur connecté
     const task = { title, userId: req.user.id };
+
     await Task.create(task);
+
     res.status(201).json({ message: `La tâche "${task.title}" a été ajoutée` });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la récupération des tâches" });
+
+    res.status(500).json({ error: "Erreur lors de la création de la tâche" });
   }
 });
 
-// Supprimer une tâche
+// Route pour supprimer une tâche par son id
 router.delete("/task/:id", verifyToken, async (req, res) => {
-  const { id } = req.params; // Récupération de l'ID depuis les paramètres
-  // const id = req.params.id;
+  const id = req.params.id;
 
   try {
-    // Recherche de la tâche à supprimer
-    const task = await Task.findById(id);
+    const deletedTask = await Task.findByIdAndDelete(id);
 
-    if (!task) {
-      return res.status(404).json({ message: "Tâche non trouvée" });
+    if (!deletedTask) {
+      return res.status(404).json({ error: "Tâche non trouvée" });
     }
 
-    // Suppression de la tâche
-    await Task.findByIdAndDelete(id);
     res
       .status(200)
-      .json({ message: `La tâche "${task.title}" a été supprimée` });
+      .json({ message: `La tâche "${deletedTask.title}" a été supprimée` });
   } catch (error) {
     console.error(error);
+
     res
       .status(500)
       .json({ error: "Erreur lors de la suppression de la tâche" });
   }
 });
 
-// Modifier une tâche
+// Route pour modifier une tâche par son id
 router.put("/task/:id", verifyToken, async (req, res) => {
-  const { id } = req.params; // Récupération de l'ID depuis les paramètres
-  // const id = req.params.id;
-  const task = req.body; // Nouvelles données de la tâche
+  const id = req.params.id;
+  const task = req.body;
 
-  // Mise à jour de la tâche
-  await Task.findByIdAndUpdate(id, task);
-  res.status(200).json({ message: `La tâche "${task.title}" a été modifiée` });
+  try {
+    await Task.findByIdAndUpdate(id, task);
+
+    res
+      .status(200)
+      .json({ message: `La tâche "${task.title}" a été modifiée` });
+  } catch (error) {
+    console.error(error);
+
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la modification de la tâche" });
+  }
 });
 
 module.exports = router;
