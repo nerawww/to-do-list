@@ -4,13 +4,13 @@ Une application complète de gestion de tâches développée avec React.js pour 
 
 ## 🌟 Fonctionnalités
 
-- ✅ **Authentification utilisateur** (inscription/connexion avec JWT)
-- ✅ **Gestion des tâches** (créer, lire, modifier, supprimer)
-- ✅ **Interface utilisateur moderne** avec Tailwind CSS et DaisyUI
-- ✅ **Sécurisation des routes** avec middleware d'authentification
-- ✅ **Base de données MongoDB** pour la persistance des données
-- ✅ **Validation des données** côté serveur
-- ✅ **Responsive design** - Compatible mobile et desktop
+- ✅ Authentification utilisateur (inscription/connexion avec JWT)
+- ✅ Gestion des tâches (créer, lire, modifier, supprimer)
+- ✅ Interface utilisateur moderne avec Tailwind CSS et DaisyUI
+- ✅ Sécurisation des routes avec middleware d'authentification
+- ✅ Base de données MongoDB pour la persistance des données
+- ✅ Validation des données côté serveur
+- ✅ Responsive design - Compatible mobile et desktop
 
 ## 🛠️ Technologies utilisées
 
@@ -37,40 +37,32 @@ Une application complète de gestion de tâches développée avec React.js pour 
 ## 📁 Structure du projet
 
 ```
-09_to-do-list/
-├── package.json
-├── README.md
+to-do-list/
 ├── backend/
-│   ├── .env
 │   ├── app.js
-│   ├── package.json
 │   ├── models/
 │   │   ├── Task.js
 │   │   └── User.js
 │   ├── routes/
+│   │   ├── adminRoute.js
 │   │   ├── taskRoute.js
 │   │   └── userRoute.js
 │   └── utils/
 │       └── verifyToken.js
-└── frontend/
-    ├── index.html
-    ├── package.json
-    ├── vite.config.js
-    ├── tailwind.config.js
-    ├── src/
-    │   ├── App.jsx
-    │   ├── main.jsx
-    │   ├── index.css
-    │   ├── App.css
-    │   ├── components/
-    │   │   ├── Item.jsx
-    │   │   └── TaskModal.jsx
-    │   └── pages/
-    │       ├── AccountActivated.jsx
-    │       ├── Login.jsx
-    │       ├── Register.jsx
-    │       └── Task.jsx
-    └── public/
+├── frontend/
+│   ├── index.html
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   ├── components/
+│   │   │   ├── AuthForm.jsx
+│   │   │   ├── Item.jsx
+│   │   │   └── TaskModal.jsx
+│   │   └── pages/
+│   │       ├── Admin.jsx
+│   │       ├── Login.jsx
+│   │       ├── Register.jsx
+│   │       └── Task.jsx
 ```
 
 ## 🚀 Installation et démarrage
@@ -85,7 +77,7 @@ Une application complète de gestion de tâches développée avec React.js pour 
 
 ```bash
 git clone <url-du-repo>
-cd 09_to-do-list
+cd to-do-list
 ```
 
 ### 2. Configuration du Backend
@@ -99,35 +91,25 @@ Créer un fichier `.env` dans le dossier backend :
 
 ```env
 MONGO_URL=mongodb://localhost:27017/todolist
-# ou pour MongoDB Atlas:
-# MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/todolist
-
 PORT=5000
 JWT_SECRET=your_super_secret_jwt_key_here
+EMAIL_FROM=your_email@gmail.com
+EMAIL_PASS=your_email_password
 ```
 
 Démarrer le serveur backend :
 
 ```bash
-# Mode développement
 npm run dev
-
-# ou mode production
+# ou
 node app.js
 ```
-
-Le serveur sera accessible sur `http://localhost:5000`
 
 ### 3. Configuration du Frontend
 
 ```bash
 cd ../frontend
 npm install
-```
-
-Démarrer l'application frontend :
-
-```bash
 npm run dev
 ```
 
@@ -137,19 +119,19 @@ L'application sera accessible sur `http://localhost:5173`
 
 ### Authentification
 
-| Méthode | Endpoint | Description | Body |
-|---------|----------|-------------|------|
-| `POST` | `/register` | Inscription d'un nouvel utilisateur | `{username, email, password}` |
-| `POST` | `/login` | Connexion utilisateur | `{email, password}` |
+| Méthode | Endpoint    | Description                         | Body                          |
+| ------- | ----------- | ----------------------------------- | ----------------------------- |
+| POST    | `/register` | Inscription d'un nouvel utilisateur | `{username, email, password}` |
+| POST    | `/login`    | Connexion utilisateur               | `{email, password}`           |
 
-### Tâches (routes protégées - nécessitent un token JWT)
+### Tâches (protégées, nécessite un token JWT)
 
-| Méthode | Endpoint | Description | Headers | Body |
-|---------|----------|-------------|---------|------|
-| `GET` | `/task` | Récupérer toutes les tâches de l'utilisateur | `Authorization: Bearer <token>` | - |
-| `POST` | `/task` | Créer une nouvelle tâche | `Authorization: Bearer <token>` | `{title}` |
-| `PUT` | `/task/:id` | Modifier une tâche | `Authorization: Bearer <token>` | `{title, status}` |
-| `DELETE` | `/task/:id` | Supprimer une tâche | `Authorization: Bearer <token>` | - |
+| Méthode | Endpoint    | Description                 | Headers                         | Body              |
+| ------- | ----------- | --------------------------- | ------------------------------- | ----------------- |
+| GET     | `/task`     | Récupérer toutes les tâches | `Authorization: Bearer <token>` | -                 |
+| POST    | `/task`     | Créer une nouvelle tâche    | `Authorization: Bearer <token>` | `{title}`         |
+| PUT     | `/task/:id` | Modifier une tâche          | `Authorization: Bearer <token>` | `{title, status}` |
+| DELETE  | `/task/:id` | Supprimer une tâche         | `Authorization: Bearer <token>` | -                 |
 
 ## 💾 Modèles de données
 
@@ -162,8 +144,8 @@ L'application sera accessible sur `http://localhost:5173`
   password: String (requis, haché avec bcrypt),
   role: String (défaut: "user"),
   isVerified: Boolean (défaut: false),
-  createdAt: Date (auto-généré),
-  updatedAt: Date (auto-généré)
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
@@ -179,121 +161,47 @@ L'application sera accessible sur `http://localhost:5173`
 
 ## 🎨 Interface utilisateur
 
-L'application utilise DaisyUI pour un design moderne et responsive :
-
-- **Page de connexion** - Formulaire d'authentification avec redirection automatique
-- **Page d'inscription** - Création de compte utilisateur avec validation
-- **Dashboard des tâches** - Gestion complète des tâches avec interface intuitive
-- **Modal d'ajout** - Interface modale pour créer de nouvelles tâches
-- **Composants réutilisables** - Architecture modulaire pour faciliter la maintenance
+- Page de connexion et d'inscription
+- Dashboard des tâches (ajout, édition, suppression)
+- Interface d'administration (gestion des utilisateurs)
 
 ## 🔐 Sécurité
 
-- **Hachage des mots de passe** avec bcrypt (salt rounds: 10)
-- **Authentification JWT** pour sécuriser les routes protégées
-- **Validation des données** côté serveur avec vérifications strictes
-- **Middleware de vérification** des tokens avec gestion d'erreurs
-- **Protection CORS** configurée pour les requêtes cross-origin
-- **Vérification d'unicité** des emails et titres de tâches
+- Hachage des mots de passe avec bcrypt
+- Authentification JWT pour sécuriser les routes
+- Validation des données côté serveur
+- Middleware de vérification des tokens
 
 ## 📝 Utilisation
 
-1. **Inscription** : 
-   - Créer un compte avec nom d'utilisateur, email et mot de passe
-   - Validation automatique des champs requis
-
-2. **Connexion** : 
-   - Se connecter avec email et mot de passe
-   - Redirection automatique vers le dashboard
-
-3. **Gestion des tâches** :
-   - Cliquer sur le bouton "+" vert pour ajouter une tâche
-   - Utiliser l'icône crayon (bleu) pour modifier une tâche
-   - Utiliser l'icône poubelle (rouge) pour supprimer une tâche
-   - Les tâches sont automatiquement sauvegardées
+1. Inscription : Créez un compte utilisateur.
+2. Connexion : Connectez-vous avec vos identifiants.
+3. Gestion des tâches : Ajoutez, modifiez, supprimez vos tâches.
+4. Déconnexion : Cliquez sur le bouton de déconnexion.
 
 ## 🚧 Améliorations possibles
 
-### Fonctionnalités prioritaires
-
-- [ ] **Implémentation complète de la fonction d'édition** des tâches
-- [ ] **Activation du statut des tâches** (complété/non complété) avec mise à jour
-- [ ] **Gestion des erreurs** côté frontend avec notifications
-
-### Fonctionnalités avancées
-
-- [ ] **Catégorisation des tâches** avec couleurs
-- [ ] **Dates d'échéance** et rappels
-- [ ] **Notifications push** pour les tâches importantes
-- [ ] **Mode sombre/clair** avec préférence utilisateur
-- [ ] **Recherche et filtres** avancés
-- [ ] **Partage de tâches** entre utilisateurs
-- [ ] **Drag & Drop** pour réorganiser les tâches
-- [ ] **Statistiques** et tableaux de bord
-- [ ] **Export/Import** des données
-- [ ] **Application mobile** avec React Native
-
-### Améliorations techniques
-
-- [ ] **Tests unitaires** avec Jest
-- [ ] **Tests d'intégration** pour l'API
-- [ ] **Documentation API** avec Swagger
-- [ ] **Déploiement automatisé** avec CI/CD
-- [ ] **Monitoring** et logs
-- [ ] **Cache Redis** pour les performances
-
-## 🐛 Dépannage
-
-### Problèmes courants
-
-**Erreur de connexion MongoDB :**
-
-```bash
-# Vérifier que MongoDB est démarré
-mongod --version
-
-# Pour MongoDB local
-brew services start mongodb-community
-# ou
-sudo systemctl start mongod
-```
-
-**Erreur CORS :**
-- Vérifier que le backend tourne sur le port 5000
-- S'assurer que les URLs correspondent dans le frontend
-
-**Token invalide :**
-- Vider le localStorage du navigateur
-- Se reconnecter
+- [ ] Catégorisation des tâches
+- [ ] Dates d'échéance et rappels
+- [ ] Notifications push
+- [ ] Mode sombre/clair
+- [ ] Partage de tâches entre utilisateurs
+- [ ] Tests unitaires et d'intégration
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Voici comment contribuer :
+Les contributions sont les bienvenues !
 
-1. **Fork** le projet
-2. Créer une **branche feature** (`git checkout -b feature/AmazingFeature`)
-3. **Commiter** les changements (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une **Pull Request**
-
-### Guidelines de contribution
-
-- Suivre les conventions de nommage existantes
-- Ajouter des commentaires explicatifs
-- Tester les nouvelles fonctionnalités
-- Mettre à jour la documentation si nécessaire
-
-## 📞 Support
-
-Pour toute question ou problème :
-- Ouvrir une [issue](../../issues) sur GitHub
-- Consulter la documentation des technologies utilisées
-- Vérifier les logs dans la console du navigateur et du serveur
+1. Forkez le projet
+2. Créez une branche feature
+3. Commitez vos changements
+4. Pushez la branche
+5. Ouvrez une Pull Request
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+Ce projet est sous licence MIT.
 
 ---
 
-**Développé avec ❤️ en JavaScript**
+Développé avec ❤️ en JavaScript
