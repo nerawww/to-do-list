@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
+import AuthForm from "../components/AuthForm";
+import toast from "daisyui/components/toast";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = import.meta.env.VITE_API_URL;
 // Page de connexion utilisateur
 export default function Login() {
   // États pour les champs du formulaire
@@ -15,7 +18,7 @@ export default function Login() {
     console.log("J'ai empêché le rafraîchissement de la page");
 
     // Envoi des données de connexion au serveur
-    const response = await fetch("http://localhost:5000/login", {
+    const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "Application/json",
@@ -30,8 +33,17 @@ export default function Login() {
       localStorage.setItem("email", data.email);
       localStorage.setItem("role", data.role);
       localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
+      if (data.role === "user") {
+        navigate("/tasks");
+      }
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        console.log(response);
+        toast.error("Identifiants invalides");
+      }
       // Redirection vers la page des tâches
-      navigate("/tasks");
       // const payload = jwtDecode(data);
       // console.log(payload);
     }
@@ -45,33 +57,13 @@ export default function Login() {
   return (
     <div className="h-screen flex justify-center items-center">
       {/* Formulaire de connexion centré */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-[500px] p-5 flex flex-col gap-2 shadow-xl"
-      >
-        <h1 className="text-center text-3xl font-bold">Connexion</h1>
-        {/* Champ email */}
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          type="email"
-          placeholder="Email..."
-          className="w-full input input-primary"
-        />
-        {/* Champ mot de passe */}
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          type="password"
-          placeholder="Mot de passe..."
-          className="w-full input input-primary"
-        />
-        <button className="btn btn-primary">Se connecter</button>
-        {/* Lien vers la page d'inscription */}
-        <Link to={"/register"} className="underline text-right">
-          Créer un compte
-        </Link>
-      </form>
+      <AuthForm
+        title={"Connexion"}
+        handleSubmit={handleSubmit}
+        onChangeUsername={(e) => setUsername(e.target.value)}
+        onChangeEmail={(e) => setEmail(e.target.value)}
+        onChangePassword={(e) => setPassword(e.target.value)}
+      />
     </div>
   );
 }

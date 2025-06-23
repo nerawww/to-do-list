@@ -1,47 +1,57 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import Item from "../components/Item";
 import TaskModal from "../components/TaskModal";
 
-// Page principale de gestion des tâches
-export default function Task() {
-  // États de l'application
-  const [tasks, setTasks] = useState([]); // Liste des tâches
-  const [title, setTitle] = useState(""); // Titre pour nouvelle tâche
-  const [editedTitle, setEditedTitle] = useState(""); // Titre pour édition
-  const [isChecked, setIsChecked] = useState(false); // État de la checkbox
+const API_URL = import.meta.env.VITE_API_URL;
 
-  // Récupération du token d'authentification
+export default function Task() {
+  const [tasks, setTasks] = useState([]);
+  const [headline, setHeadline] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [title, setTitle] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [id, setId] = useState("");
+
   const token = localStorage.getItem("token");
 
-  // Fonction pour récupérer toutes les tâches depuis le serveur
   const fetchTasks = async () => {
-    const response = await fetch("http://localhost:5000/task", {
+    const response = await fetch(`${API_URL}/task`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Ajout du token d'authentification
+        Authorization: `Bearer ${token}`,
       },
     });
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
       setTasks(data);
     }
   };
 
-  // Récupération des tâches au montage du composant
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  // Fonction pour gérer l'édition d'une tâche
-  const handleEdit = async (task) => {
-    setEditedTitle(task.title);
-    setIsChecked(task.status);
+  const handleAdd = () => {
+    setHeadline("Ajouter une tâche");
+    setTitle("");
+    setIsEdit(false);
+    setIsChecked(false);
+    setId("");
+    document.getElementById("my_modal_3").showModal();
   };
 
-  // Fonction pour supprimer une tâche
+  const handleEdit = (task) => {
+    setHeadline("Modifier une tâche");
+    setTitle(task.title);
+    setIsEdit(true);
+    setIsChecked(task.status);
+    setId(task._id);
+    document.getElementById("my_modal_3").showModal();
+  };
+
   const handleDelete = async (id) => {
-    const response = await fetch(`http://localhost:5000/task/${id}`, {
+    const response = await fetch(`${API_URL}/task/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,40 +59,56 @@ export default function Task() {
     });
     if (response.ok) {
       const data = await response.json();
-      fetchTasks(); // Rechargement de la liste après suppression
+      console.log(data);
+      fetchTasks();
     }
   };
 
-  // Fonction pour soumettre une nouvelle tâche
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/task", {
-      method: "POST",
-      headers: {
-        "Content-Type": "Application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setTitle(""); // Réinitialisation du champ
-      fetchTasks(); // Rechargement de la liste après ajout
+    if (isEdit) {
+      const response = await fetch(`${API_URL}/task/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "Application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: title, status: isChecked }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        fetchTasks();
+      }
+      document.getElementById("my_modal_3").close();
+    } else {
+      const response = await fetch(`${API_URL}/task`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "Application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setTitle("");
+        fetchTasks();
+      }
+      document.getElementById("my_modal_3").close();
     }
-    document.getElementById("my_modal_3").close(); // Fermeture du modal
   };
 
   return (
     <div className="w-[500px] m-auto p-5 shadow-2xl rounded">
       <h1 className="text-3xl text-center my-3">Liste de tâches</h1>
-      {/* Bouton pour ouvrir le modal d'ajout de tâche */}
-      <button>
+      <button type="button">
         <MdAdd
           className="size-5 cursor-pointer text-green-500 hover:text-green-700 bg-slate-900 border rounded mx-2.5"
-          onClick={() => document.getElementById("my_modal_3").showModal()}
+          onClick={handleAdd}
         />
       </button>
-      {/* Liste des tâches */}
       {tasks.map((task) => (
         <Item
           key={task._id}
@@ -91,36 +117,15 @@ export default function Task() {
           handleDelete={() => handleDelete(task._id)}
         />
       ))}
-      {/* Modal pour ajouter une tâche */}
       <TaskModal
-        handleSubmit={handleSubmit}
+        headline={headline}
         title={title}
-        onChange={(e) => setTitle(e.target.value)}
+        isEdit={isEdit}
+        isChecked={isChecked}
+        handleSubmit={handleSubmit}
+        onChangeTitle={(e) => setTitle(e.target.value)}
+        onChangeStatus={(e) => setIsChecked(e.target.checked)}
       />
-
-      {/* Section d'édition de tâche (interface d'édition inline) */}
-      <div className="flex items-center justify-between gap-3 p-2 border-b m-5">
-        <div className="flex items-center gap-3 flex-1">
-          {/* Checkbox pour le statut */}
-          <input
-            type="checkbox"
-            checked={isChecked}
-            className="checkbox checkbox-primary"
-            onChange={(e) => setIsChecked(e.target.checked)}
-          />
-          {/* Champ d'édition du titre */}
-          <input
-            type="text"
-            value={editedTitle}
-            className="input input-primary flex-1"
-            onChange={(e) => setEditedTitle(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Bouton de validation des modifications */}
-          <button className="btn btn-primary btn-sm">Modifier</button>
-        </div>
-      </div>
     </div>
   );
 }

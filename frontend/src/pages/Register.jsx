@@ -1,5 +1,7 @@
 import { useState } from "react";
+import AuthForm from "../components/AuthForm";
 
+const API_URL = import.meta.env.VITE_API_URL;
 // Page d'inscription d'un nouvel utilisateur
 export default function Register() {
   // États pour les champs du formulaire
@@ -10,7 +12,7 @@ export default function Register() {
   //   const handleSubmit = async (e) => {
   //     e.preventDefault();
   //     console.log("J'ai empêché le rafraîchissement de la page");
-  //       const response = await fetch("http://localhost:5000/register");
+  //       const response = await fetch(`${API_URL}/register`);
 
   // Fonction de soumission du formulaire d'inscription
   const handleSubmit = (e) => {
@@ -19,7 +21,7 @@ export default function Register() {
     console.log(username, email, password);
 
     // Envoi des données d'inscription au serveur
-    fetch("http://localhost:5000/register", {
+    fetch(`${API_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "Application/json",
@@ -34,37 +36,13 @@ export default function Register() {
   return (
     <div className="h-screen flex justify-center items-center">
       {/* Formulaire d'inscription centré */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-[500px] p-5 flex flex-col gap-2 shadow-xl"
-      >
-        <h1 className="text-center text-3xl font-bold">Inscription</h1>
-        {/* Champ nom d'utilisateur */}
-        <input
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          type="text"
-          placeholder="Nom d'utilisateur..."
-          className="input input-primary w-full"
-        />
-        {/* Champ email */}
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          type="email"
-          placeholder="Email..."
-          className="input input-primary w-full"
-        />
-        {/* Champ mot de passe */}
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          type="password"
-          placeholder="Mot de passe..."
-          className="input input-primary w-full"
-        />
-        <button className="btn btn-primary">S'inscrire</button>
-      </form>
+      <AuthForm
+        isRegistered={true}
+        handleSubmit={handleSubmit}
+        onChangeUsername={(e) => setUsername(e.target.value)}
+        onChangeEmail={(e) => setEmail(e.target.value)}
+        onChangePassword={(e) => setPassword(e.target.value)}
+      />
     </div>
   );
 }

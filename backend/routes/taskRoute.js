@@ -44,7 +44,7 @@ router.post("/task", verifyToken, async (req, res) => {
     // Création de la nouvelle tâche pour l'utilisateur connecté
     const task = { title, userId: req.user.id };
     await Task.create(task);
-    res.status(201).json({ message: "Une tâche a été ajoutée" });
+    res.status(201).json({ message: `La tâche "${task.title}" a été ajoutée` });
   } catch (error) {
     console.error(error);
     res
@@ -57,7 +57,7 @@ router.post("/task", verifyToken, async (req, res) => {
 router.delete("/task/:id", verifyToken, async (req, res) => {
   const { id } = req.params; // Récupération de l'ID depuis les paramètres
   // const id = req.params.id;
-  
+
   try {
     // Recherche de la tâche à supprimer
     const task = await Task.findById(id);
@@ -84,7 +84,7 @@ router.put("/task/:id", verifyToken, async (req, res) => {
   const { id } = req.params; // Récupération de l'ID depuis les paramètres
   // const id = req.params.id;
   const task = req.body; // Nouvelles données de la tâche
-  
+
   // Mise à jour de la tâche
   await Task.findByIdAndUpdate(id, task);
   res.status(200).json({ message: `La tâche "${task.title}" a été modifiée` });
