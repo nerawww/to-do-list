@@ -18,7 +18,9 @@ app.use(cookieParser());
 // Configuration de CORS pour autoriser le front-end à accéder à l'API
 app.use(
   cors({
-    origin: "https://to-do-list-frontend-qm84.onrender.com",
+    origin:
+      "https://to-do-list-frontend-qm84.onrender.com" ||
+      "http://localhost:5173",
     credentials: true,
   })
 );

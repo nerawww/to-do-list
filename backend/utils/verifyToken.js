@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 // Middleware pour vérifier la présence et la validité du token JWT
 async function verifyToken(req, res, next) {
   const token = req.cookies.token;
-  console.log(req.cookies);
 
   // Vérifie si le token est présent
   if (!token) {

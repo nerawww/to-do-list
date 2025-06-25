@@ -23,14 +23,14 @@ router.get("/task", verifyToken, async (req, res) => {
 router.post("/task", verifyToken, async (req, res) => {
   try {
     const title = req.body.title;
-
+    console.log(title);
     // Vérifie que le titre n'est pas vide
     if (!title || title.trim().length === 0) {
       return res.status(400).json({ message: "Ce champ est requis" });
     }
 
     const task = { title, userId: req.user.id };
-
+    console.log(task);
     await Task.create(task);
 
     res.status(201).json({ message: `La tâche "${task.title}" a été ajoutée` });
