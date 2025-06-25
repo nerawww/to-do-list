@@ -14,5 +14,8 @@
     "daisyui": "^5.0.43",
     "react-router-dom": "^7.6.2",
     "tailwindcss": "^4.1.10"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react-swc": "^3.10.2"
   }
 }
