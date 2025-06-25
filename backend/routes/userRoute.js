@@ -54,7 +54,7 @@ router.post("/register", async (req, res) => {
   res.status(200).json({ message: "Connexion réussie" });
 
   // Préparation de l'email d'activation
-  const activationLink = `https://to-do-list-8y10.onrender.com/validate/${token}`;
+  const activationLink = `https://to-do-list-frontend-qm84.onrender.com/validate/${token}`;
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: email,
@@ -90,7 +90,7 @@ router.get("/validate/:token", async (req, res) => {
     res
       .status(200)
       .redirect(
-        "https://to-do-list-frontend-xw6j.onrender.com/activated-account"
+        "https://to-do-list-frontend-qm84.onrender.com/activated-account"
       );
   } catch {
     res.status(400).send("Lien invalide ou expiré");
