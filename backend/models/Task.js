@@ -1,19 +1,18 @@
-// Importation de mongoose pour la gestion de la base de données
 const mongoose = require("mongoose");
 
-// Définition du schéma de tâche
+// Définition du schéma d'une tâche
 const taskSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: true, // Le titre est obligatoire
   },
   status: {
     type: Boolean,
-    default: false,
+    default: false, // Par défaut, la tâche n'est pas terminée
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "User", // Référence à l'utilisateur propriétaire de la tâche
   },
 });
 

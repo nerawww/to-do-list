@@ -1,11 +1,11 @@
 import { MdDelete, MdEdit } from "react-icons/md";
 
-// Composant représentant une tâche individuelle dans la liste
+// Composant pour afficher une tâche individuelle avec actions
 export default function Item({ task, handleEdit, handleDelete }) {
   return (
     <div className="flex items-center justify-between gap-3 p-2 border-b">
       <div className="flex items-center gap-3 flex-1">
-        {/* Checkbox pour indiquer le statut de la tâche */}
+        {/* Case à cocher pour le statut de la tâche */}
         <input
           type="checkbox"
           checked={task.status}
@@ -16,7 +16,6 @@ export default function Item({ task, handleEdit, handleDelete }) {
         {/* Titre de la tâche */}
         <p className="flex-1">{task.title}</p>
       </div>
-
       <div className="flex items-center gap-2">
         {/* Bouton pour éditer la tâche */}
         <button type="button" onClick={handleEdit}>

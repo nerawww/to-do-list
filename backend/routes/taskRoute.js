@@ -1,11 +1,10 @@
-// Importation des modules nécessaires
 const express = require("express");
 const Task = require("../models/Task");
 const verifyToken = require("../utils/verifyToken");
 
 const router = express.Router();
 
-// Route pour récupérer toutes les tâches de l'utilisateur connecté
+// Récupérer toutes les tâches de l'utilisateur connecté
 router.get("/task", verifyToken, async (req, res) => {
   try {
     const tasks = await Task.find({ userId: req.user.id });
@@ -20,12 +19,12 @@ router.get("/task", verifyToken, async (req, res) => {
   }
 });
 
-// Route pour créer une nouvelle tâche
+// Créer une nouvelle tâche pour l'utilisateur connecté
 router.post("/task", verifyToken, async (req, res) => {
   try {
     const title = req.body.title;
 
-    // Vérification du champ titre
+    // Vérifie que le titre n'est pas vide
     if (!title || title.trim().length === 0) {
       return res.status(400).json({ message: "Ce champ est requis" });
     }
@@ -42,7 +41,27 @@ router.post("/task", verifyToken, async (req, res) => {
   }
 });
 
-// Route pour supprimer une tâche par son id
+// Modifier une tâche par son id
+router.put("/task/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const task = req.body;
+
+  try {
+    await Task.findByIdAndUpdate(id, task);
+
+    res
+      .status(200)
+      .json({ message: `La tâche "${task.title}" a été modifiée` });
+  } catch (error) {
+    console.error(error);
+
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la modification de la tâche" });
+  }
+});
+
+// Supprimer une tâche par son id
 router.delete("/task/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
 
@@ -62,26 +81,6 @@ router.delete("/task/:id", verifyToken, async (req, res) => {
     res
       .status(500)
       .json({ error: "Erreur lors de la suppression de la tâche" });
-  }
-});
-
-// Route pour modifier une tâche par son id
-router.put("/task/:id", verifyToken, async (req, res) => {
-  const id = req.params.id;
-  const task = req.body;
-
-  try {
-    await Task.findByIdAndUpdate(id, task);
-
-    res
-      .status(200)
-      .json({ message: `La tâche "${task.title}" a été modifiée` });
-  } catch (error) {
-    console.error(error);
-
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la modification de la tâche" });
   }
 });
 

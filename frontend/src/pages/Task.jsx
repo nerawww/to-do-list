@@ -1,13 +1,13 @@
 import Item from "../components/Item";
 import TaskModal from "../components/TaskModal";
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import { MdAdd, MdLogout } from "react-icons/md";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Page principale pour la gestion des tâches utilisateur
+// Page principale pour la gestion des tâches
 export default function Task() {
   const [tasks, setTasks] = useState([]);
   const [headline, setHeadline] = useState("");
@@ -15,15 +15,11 @@ export default function Task() {
   const [title, setTitle] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
-  // Récupère la liste des tâches de l'utilisateur
+  // Récupération des tâches depuis l'API
   const fetchTasks = async () => {
     const response = await fetch(`${API_URL}/task`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -59,9 +55,7 @@ export default function Task() {
   const handleDelete = async (id) => {
     const response = await fetch(`${API_URL}/task/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -80,10 +74,7 @@ export default function Task() {
       // Modification d'une tâche existante
       const response = await fetch(`${API_URL}/task/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "Application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
         body: JSON.stringify({ title, status: isChecked }),
       });
 
@@ -92,18 +83,17 @@ export default function Task() {
       if (response.ok) {
         console.log(data);
         fetchTasks();
-        toast.success(data.message);
+        // toast.success(data.message);
+        Swal.fire("La tâche a été modifiée", "", "success");
       } else {
-        toast.error(data.message);
+        // toast.error(data.message);
+        Swal.fire("La tâche n'a pas pu être modifiée", "", "error");
       }
     } else {
       // Ajout d'une nouvelle tâche
       const response = await fetch(`${API_URL}/task`, {
         method: "POST",
-        headers: {
-          "Content-Type": "Application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
         body: JSON.stringify({ title }),
       });
 
@@ -118,8 +108,7 @@ export default function Task() {
         toast.error(data.message);
       }
     }
-
-    // Ferme la modale après soumission
+    // Fermeture de la modale après soumission
     document.getElementById("my_modal_3").close();
   };
 
@@ -128,11 +117,6 @@ export default function Task() {
     localStorage.clear();
     navigate("/");
   };
-
-  // Redirection si l'utilisateur n'est pas connecté
-  if (!token) {
-    return <Navigate to={"/"} />;
-  }
 
   return (
     <div className="w-[500px] m-auto p-5 shadow-2xl rounded">
@@ -167,7 +151,7 @@ export default function Task() {
         />
       ))}
 
-      {/* Modal pour ajouter ou éditer une tâche */}
+      {/* Modale pour ajouter/éditer une tâche */}
       <TaskModal
         headline={headline}
         title={title}

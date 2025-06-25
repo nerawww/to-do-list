@@ -1,6 +1,7 @@
 import AuthForm from "../components/AuthForm";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -11,12 +12,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Gère la soumission du formulaire de connexion
+  // Gestion de la soumission du formulaire de connexion
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "Application/json",
       },
@@ -26,16 +28,21 @@ export default function Login() {
     const data = await response.json();
 
     if (response.ok) {
-      // Stocke les infos utilisateur dans le localStorage
-      localStorage.setItem("email", data.email);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
-
-      // Redirige selon le rôle
-      if (data.role === "user") navigate("/tasks");
-      if (data.role === "admin") navigate("/admin");
+      // Redirection vers la page des tâches si connexion réussie
+      console.log(response);
+      const token = document.cookie.split("=")[1];
+      const decode = jwtDecode(token);
+      if (decode === "user") {
+        navigate("/tasks");
+      }
+      if (decode === "admin") {
+        navigate("/admin");
+        localStorage.setItem("email", decode.email);
+        localStorage.setItem("username", decode.username);
+        localStorage.setItem("role", decode.role);
+      }
     } else {
+      // Affichage d'une erreur si échec
       console.log(data);
       toast.error(data.message);
     }
@@ -43,7 +50,7 @@ export default function Login() {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      {/* Utilisation du composant AuthForm pour la connexion */}
+      {/* Utilisation du composant AuthForm */}
       <AuthForm
         title={"Connexion"}
         handleSubmit={handleSubmit}

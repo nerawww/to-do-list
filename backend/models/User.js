@@ -1,29 +1,28 @@
-// Importation de mongoose pour la gestion de la base de données
 const mongoose = require("mongoose");
 
-// Définition du schéma utilisateur
+// Définition du schéma d'un utilisateur
 const userSchema = mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
+      required: true, // Le nom d'utilisateur est obligatoire
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
+      required: true, // L'email est obligatoire
+      unique: true, // L'email doit être unique
     },
     password: {
       type: String,
-      required: true,
+      required: true, // Le mot de passe est obligatoire
     },
     role: {
       type: String,
-      default: "user",
+      default: "user", // Par défaut, le rôle est "user"
     },
     isVerified: {
       type: Boolean,
-      default: false,
+      default: false, // Par défaut, le compte n'est pas vérifié
     },
   },
   { timestamps: true } // Ajoute createdAt et updatedAt automatiquement

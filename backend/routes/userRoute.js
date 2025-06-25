@@ -1,14 +1,13 @@
-// Importation des modules nécessaires
 const express = require("express");
-const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const User = require("../models/User");
 
 const router = express.Router();
 
-// Route pour l'inscription d'un utilisateur
-router.get("/register", async (req, res) => {
+// Inscription d'un nouvel utilisateur
+router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   // Vérification des champs obligatoires
@@ -16,13 +15,13 @@ router.get("/register", async (req, res) => {
     return res.status(400).json({ message: "Mauvaise requête" });
   }
 
-  // Vérification de l'existence de l'utilisateur
+  // Vérifie si l'utilisateur existe déjà
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return res.status(400).json({ message: "Mauvaise requête" });
   }
 
-  // Hashage du mot de passe
+  // Hash du mot de passe
   const hash = await bcrypt.hash(password, 10);
 
   // Création de l'utilisateur
@@ -45,8 +44,16 @@ router.get("/register", async (req, res) => {
     process.env.JWT_SECRET
   );
 
-  // Lien d'activation envoyé par email
-  const activationLink = `http://localhost:5000/validate/${email}`;
+  // Envoie le token dans un cookie httpOnly
+  res.cookie("token", token, {
+    httpOnly: false,
+    secure: true,
+  });
+
+  res.status(200).json({ message: "Connexion réussie" });
+
+  // Préparation de l'email d'activation
+  const activationLink = `http://localhost:5000/validate/${token}`;
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: email,
@@ -62,10 +69,14 @@ router.get("/register", async (req, res) => {
     console.log("Email envoyé", info);
   });
 
-  res.status(201).json({ message: "Un utilisateur a été ajouté" });
+  res
+    .status(201)
+    .json({
+      message: "Veuillez vérifier votre email pour valider votre compte",
+    });
 });
 
-// Route pour valider le compte utilisateur via le lien d'activation
+// Validation du compte utilisateur via le lien d'activation
 router.get("/validate/:token", async (req, res) => {
   try {
     const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
@@ -77,13 +88,13 @@ router.get("/validate/:token", async (req, res) => {
     user.isVerified = true;
     await user.save();
 
-    res.status(200).send("Compte activé avec succès");
+    res.status(200).redirect("http://localhost:5173/activated-account");
   } catch {
     res.status(400).send("Lien invalide ou expiré");
   }
 });
 
-// Route pour la connexion d'un utilisateur
+// Connexion d'un utilisateur
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -99,6 +110,13 @@ router.post("/login", async (req, res) => {
     return res.status(404).json({ message: "Identifiants invalides" });
   }
 
+  // Vérifie si le compte est activé
+  if (!user.isVerified) {
+    return res.status(403).json({
+      message: "Compte non activé",
+    });
+  }
+
   // Génération du token JWT pour la session
   const token = jwt.sign(
     {
@@ -110,13 +128,17 @@ router.post("/login", async (req, res) => {
     process.env.JWT_SECRET
   );
 
-  // Réponse avec les informations de l'utilisateur et le token
   res.status(200).json({
     email: user.email,
     role: user.role,
     username: user.username,
     token: token,
   });
+});
+
+// Déconnexion de l'utilisateur (suppression du cookie)
+router.get("/logout", (req, res) => {
+  res.clearCookie("token");
 });
 
 module.exports = router;

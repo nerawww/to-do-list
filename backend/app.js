@@ -1,40 +1,46 @@
-// Importation des modules nécessaires
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
-
-// Importation des routes
 const userRoute = require("./routes/userRoute");
 const taskRoute = require("./routes/taskRoute");
 const adminRoute = require("./routes/adminRoute");
 
-// Création de l'application Express
 const app = express();
 
-// Middleware pour parser le JSON
+// Middleware pour parser le JSON dans les requêtes
 app.use(express.json());
 
-// Middleware pour autoriser les requêtes cross-origin
-app.use(cors());
+// Active le support des cookies
+app.use(cookieParser());
 
-// Utilisation des routes
+// Configuration de CORS pour autoriser le front-end à accéder à l'API
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+// Déclaration des routes principales de l'application
 app.use("", userRoute);
 app.use("", taskRoute);
 app.use("", adminRoute);
 
-// Définition du port d'écoute
 const PORT = process.env.PORT || 5000;
 
-// Connexion à la base de données MongoDB
+// Connexion à la base de données MongoDB puis lancement du serveur
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Connexion à MongoDB réussie");
 
-    // Démarrage du serveur après la connexion à la base de données
     app.listen(PORT, () =>
       console.log("Le serveur tourne sur le port " + PORT)
     );
   })
-  .catch((e) => console.log("Connexion à MongoDB échouée :", e));
+  .catch((e) => {
+    console.error("Connexion à MongoDB échouée :", e.message);
+    process.exit(1); // Arrête le serveur si la connexion échoue
+  });

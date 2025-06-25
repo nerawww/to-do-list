@@ -1,4 +1,4 @@
-// Composant modal pour ajouter ou éditer une tâche
+// Modale pour ajouter ou éditer une tâche
 export default function TaskModal({
   headline,
   title,
@@ -12,16 +12,14 @@ export default function TaskModal({
     <div>
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
-          {/* Titre du modal */}
+          {/* Titre de la modale */}
           <h2 className="text-2xl">{headline}</h2>
-
-          {/* Formulaire pour saisir ou modifier une tâche */}
           <form
             method="dialog"
             className="flex flex-col gap-3"
             onSubmit={handleSubmit}
           >
-            {/* Bouton pour fermer le modal */}
+            {/* Bouton pour fermer la modale */}
             <button
               type="button"
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -29,7 +27,6 @@ export default function TaskModal({
             >
               ✕
             </button>
-
             <div className="flex items-center gap-2 mt-5">
               {/* Champ pour le titre de la tâche */}
               <input
@@ -41,7 +38,7 @@ export default function TaskModal({
                 onChange={onChangeTitle}
               />
 
-              {/* Checkbox pour le statut, affichée seulement en mode édition */}
+              {/* Case à cocher pour le statut (uniquement en édition) */}
               {isEdit && (
                 <input
                   type="checkbox"
@@ -51,7 +48,6 @@ export default function TaskModal({
                 />
               )}
             </div>
-
             {/* Bouton pour enregistrer la tâche */}
             <button className="btn btn-primary" type="submit">
               Enregistrer
