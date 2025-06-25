@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin:
-      "https://to-do-list-frontend-qm84.onrender.com" ||
+      "https://to-do-list-frontend-voul.onrender.com" ||
       "http://localhost:5173",
     credentials: true,
   })

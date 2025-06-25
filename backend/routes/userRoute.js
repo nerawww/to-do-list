@@ -90,7 +90,7 @@ router.get("/validate/:token", async (req, res) => {
     res
       .status(200)
       .redirect(
-        "https://to-do-list-frontend-qm84.onrender.com/activated-account"
+        "https://to-do-list-frontend-voul.onrender.com/activated-account"
       );
   } catch {
     res.status(400).send("Lien invalide ou expiré");
