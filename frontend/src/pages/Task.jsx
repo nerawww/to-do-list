@@ -77,7 +77,7 @@ export default function Task() {
       const response = await fetch(`${API_URL}/task/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "Application/json",
         },
         credentials: "include",
         body: JSON.stringify({ title, status: isChecked }),
@@ -99,7 +99,7 @@ export default function Task() {
       const response = await fetch(`${API_URL}/task`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "Application/json",
         },
         credentials: "include",
         body: JSON.stringify({ title }),
