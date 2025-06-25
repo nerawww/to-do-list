@@ -48,6 +48,8 @@ router.post("/register", async (req, res) => {
   res.cookie("token", token, {
     httpOnly: false,
     secure: true,
+    sameSite: "None",
+    maxAge: 2 * 60 * 60 * 1000,
   });
 
   res.status(200).json({ message: "Connexion réussie" });
@@ -69,11 +71,9 @@ router.post("/register", async (req, res) => {
     console.log("Email envoyé", info);
   });
 
-  res
-    .status(201)
-    .json({
-      message: "Veuillez vérifier votre email pour valider votre compte",
-    });
+  res.status(201).json({
+    message: "Veuillez vérifier votre email pour valider votre compte",
+  });
 });
 
 // Validation du compte utilisateur via le lien d'activation
