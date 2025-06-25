@@ -99,7 +99,7 @@ export default function Task() {
       const response = await fetch(`${API_URL}/task`, {
         method: "POST",
         headers: {
-          "Content-Type": "aAplication/json",
+          "Content-Type": "Aplication/json",
         },
         credentials: "include",
         body: JSON.stringify({ title }),
