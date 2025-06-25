@@ -45,7 +45,7 @@ router.post("/register", async (req, res) => {
 
   // Envoie le token dans un cookie httpOnly
   res.cookie("token", token, {
-    httpOnly: true,
+    httpOnly: false,
     secure: true,
     sameSite: "None",
     maxAge: 2 * 60 * 60 * 1000,
