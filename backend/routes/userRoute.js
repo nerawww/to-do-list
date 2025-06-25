@@ -88,7 +88,11 @@ router.get("/validate/:token", async (req, res) => {
     user.isVerified = true;
     await user.save();
 
-    res.status(200).redirect("http://localhost:5173/activated-account");
+    res
+      .status(200)
+      .redirect(
+        "https://to-do-list-frontend-xw6j.onrender.com/activated-account"
+      );
   } catch {
     res.status(400).send("Lien invalide ou expiré");
   }
