@@ -2,6 +2,7 @@ import Item from "../components/Item";
 import TaskModal from "../components/TaskModal";
 import { useEffect, useState } from "react";
 import { MdAdd, MdLogout } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
@@ -9,6 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Page principale pour la gestion des tâches
 export default function Task() {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [headline, setHeadline] = useState("");
   const [id, setId] = useState("");

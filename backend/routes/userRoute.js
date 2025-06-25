@@ -9,7 +9,6 @@ const router = express.Router();
 // Inscription d'un nouvel utilisateur
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-
   // Vérification des champs obligatoires
   if (!username || !email || !password) {
     return res.status(400).json({ message: "Mauvaise requête" });
@@ -46,7 +45,7 @@ router.post("/register", async (req, res) => {
 
   // Envoie le token dans un cookie httpOnly
   res.cookie("token", token, {
-    httpOnly: false,
+    httpOnly: true,
     secure: true,
     sameSite: "None",
     maxAge: 2 * 60 * 60 * 1000,
@@ -131,6 +130,13 @@ router.post("/login", async (req, res) => {
     },
     process.env.JWT_SECRET
   );
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 2 * 60 * 60 * 1000,
+  });
 
   res.status(200).json({
     email: user.email,
